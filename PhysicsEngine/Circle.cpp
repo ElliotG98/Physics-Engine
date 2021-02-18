@@ -45,8 +45,9 @@ void Circle::collide(Circle *otherC) {
 }
 
 void Circle::move() {
+    const float gravity = 0.08;
     x += sin(angle) * speed;
-    y -= cos(angle) * speed;
+    y -= cos(angle) * (speed -= gravity);
 }
 
 void Circle::moveTo(float moveX, float moveY) {

@@ -14,7 +14,7 @@ int main(int, char const**)
     window.setFramerateLimit(60);
     
     //Adds an arbritrary number of Circles to the Env
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 6; i++) {
         env->addCircle();
     }
     
@@ -45,6 +45,7 @@ int main(int, char const**)
         
         env->update();
         
+        //move circle if it's clicked
         if(selectedCircle){
             float mouseX = sf::Mouse::getPosition(window).x;
             float mouseY = sf::Mouse::getPosition(window).y;

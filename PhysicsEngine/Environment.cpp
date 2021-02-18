@@ -21,6 +21,7 @@ Environment::~Environment(){
     }
 }
 
+//Create circles with a random distribution of settings i.e. starting speeds and angles
 Circle * Environment::addCircle() {
     std::random_device rd;
     std::mt19937 engine(rd());
@@ -36,7 +37,7 @@ Circle * Environment::addCircle() {
     float speed = speedDist(rd);
     std::uniform_real_distribution<float> angleDist (0, 2 * M_PI);
     float angle = angleDist(rd);
-    return addCircle(x, y, size, mass, speed, angle);
+    return addCircle(x, y, size, mass, 0, 0);
 }
 
 Circle * Environment::addCircle(float x, float y, float size, float mass, float speed, float angle) {
@@ -82,7 +83,7 @@ void Environment::collisionResponse(Circle *circle) {
 void Environment::update() {
     for (int i = 0; i < circles.size(); i++) {
         Circle *circle = circles[i];
-        //allow circles to move
+        //start circles moving and colliding
         circle->move();
         collisionResponse(circle);
         // Allow circles to collide with eachother
