@@ -79,15 +79,6 @@ void Environment::collisionResponse(Circle *circle) {
     }
 }
 
-void Environment::removeCircle(Circle *circle) {
-    for (int i = 0; i < circles.size(); i++) {
-        if (circle == circles[i]) {
-            delete circles[i];
-            circles.erase(circles.begin() + i);
-        }
-    }
-}
-
 void Environment::update() {
     for (int i = 0; i < circles.size(); i++) {
         Circle *circle = circles[i];

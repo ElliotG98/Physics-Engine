@@ -25,7 +25,6 @@ public:
         Circle * getCircle(float x, float y);
         std::vector<Circle* > getCircle() { return circles; }
         void collisionResponse(Circle *circle);
-        void removeCircle(Circle *circle);
         void update();
         
     protected:
