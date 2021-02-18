@@ -13,6 +13,7 @@ int main(int, char const**)
     sf::RenderWindow window(sf::VideoMode(800, 600), "Physics Engine window");
     window.setFramerateLimit(60);
     
+    //Adds an arbritrary number of Circles to the Env
     for (int i = 0; i < 10; i++) {
         env->addCircle();
     }
@@ -38,8 +39,8 @@ int main(int, char const**)
                     selectedCircle = nullptr;
                 }
             }
-            
         }
+        //Sets window colour to Green
         window.clear(sf::Color(0, 200, 0, 255));
         
         env->update();

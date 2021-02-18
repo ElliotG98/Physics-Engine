@@ -26,17 +26,11 @@ public:
         std::vector<Circle* > getCircle() { return circles; }
         void collisionResponse(Circle *circle);
         void removeCircle(Circle *circle);
-        void setAllowcollisionResponse(bool setting) { allowcollisionResponse = setting; }
-        void setAllowCollide(bool setting) { allowCollide = setting; }
-        void setAllowMove(bool setting) { allowMove = setting; }
         void update();
         
     protected:
         const int height;
         const int width;
-        bool allowcollisionResponse = true;
-        bool allowCollide = true;
-        bool allowMove = true;
         std::vector<Circle *> circles;
         Velocity acceleration = {M_PI, 0.2};
 };

@@ -91,15 +91,13 @@ void Environment::removeCircle(Circle *circle) {
 void Environment::update() {
     for (int i = 0; i < circles.size(); i++) {
         Circle *circle = circles[i];
-        if (allowMove) {
-            circle->move();
-        }
-        // Allows interaction with other particles.
+        //allow circles to move
+        circle->move();
+        collisionResponse(circle);
+        // Allow circles to collide with eachother
         for (int x = i + 1; x < circles.size(); x++) {
             Circle *otherCircle = circles[x];
-            if (allowCollide) {
-                circle->collide(otherCircle);
-            }
+            circle->collide(otherCircle);
         }
     }
 }
