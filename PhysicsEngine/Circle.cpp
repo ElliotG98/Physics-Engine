@@ -24,8 +24,8 @@ void Circle::collide(Circle *otherC) {
     float distance = hypot(dx, dy);
     
     if (distance < (size + otherC->size)) {
-        float tangent = atan2(dy, dx);
-        float newAngle = 0.5 * M_PI + tangent;
+        float tan = atan2(dy, dx);
+        float newAngle = 0.5 * M_PI + tan;
         float totalMass = mass + otherC->mass;
         
         Velocity v1 = Velocity{angle, speed * (mass - otherC->mass) / totalMass} + Velocity{newAngle, 2 * otherC->speed * otherC->mass / totalMass};
@@ -44,10 +44,19 @@ void Circle::collide(Circle *otherC) {
     }
 }
 
+void Circle::accelerate(Velocity velocity) {
+    Velocity vel = Velocity{angle, speed} + velocity;
+    angle = vel.angle;
+    speed = vel.speed;
+}
+
+void Circle::drag() {
+    speed *= airResistance;
+}
+
 void Circle::move() {
-    const float gravity = 0.08;
     x += sin(angle) * speed;
-    y -= cos(angle) * (speed -= gravity);
+    y -= cos(angle) * (speed);
 }
 
 void Circle::moveTo(float moveX, float moveY) {

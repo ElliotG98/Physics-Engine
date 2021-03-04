@@ -23,26 +23,26 @@ Environment::~Environment(){
 
 //Create circles with a random distribution of settings i.e. starting speeds and angles
 Circle * Environment::addCircle() {
-    std::random_device rd;
-    std::mt19937 engine(rd());
-    std::uniform_int_distribution<int> sizeDist(10,20);
-    float size = sizeDist(rd);
+    std::random_device random;
+    std::default_random_engine el(random());
+    std::uniform_int_distribution<int> sizeDist(10,30);
     std::uniform_int_distribution<int> massDist(100, 10000);
-    float mass = massDist(rd);
+    float size = sizeDist(el);
+    float speed = 0;
+    float angle = 0;
+    float mass = massDist(el);
     std::uniform_int_distribution<int> xDist(size, width - size);
-    float x = xDist(rd);
     std::uniform_int_distribution<int> yDist(size, height - size);
-    float y = yDist(rd);
-    std::uniform_real_distribution<float> speedDist (0, 1);
-    float speed = speedDist(rd);
-    std::uniform_real_distribution<float> angleDist (0, 2 * M_PI);
-    float angle = angleDist(rd);
-    return addCircle(x, y, size, mass, 0, 0);
+    float x = xDist(el);
+    float y = yDist(el);
+    return addCircle(x, y, size, mass, speed, angle);
 }
 
 Circle * Environment::addCircle(float x, float y, float size, float mass, float speed, float angle) {
-    float airMass = 0.3;
-    float airResistance = pow((mass/(mass + airMass)), size);
+    //https://jfuchs.hotell.kau.se/kurs/amek/prst/06_simu.pdf drag forces
+    //-1/2 x mass * speed squared * size * drag coeficient * angle
+    float dragCoef = 0.1;
+    float airResistance = -1/2*(mass*(speed*speed)*size*dragCoef*angle);
     Circle *circle = new Circle(x, y, size, mass, speed, angle, airResistance);
     circles.push_back(circle);
     return circle;
@@ -86,7 +86,9 @@ void Environment::update() {
     for (int i = 0; i < circles.size(); i++) {
         Circle *circle = circles[i];
         //start circles moving and colliding
+        circle->accelerate(acceleration);
         circle->move();
+        circle->drag();
         collisionResponse(circle);
         // individually check if circles intersect by size : collide
         for (int x = i + 1; x < circles.size(); x++) {

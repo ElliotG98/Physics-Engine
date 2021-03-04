@@ -32,6 +32,8 @@ public:
     void setAirResistance(float aR) {airResistance = aR;}
     void collide(Circle *otherC);
     void move();
+    void accelerate(Velocity velocity);
+    void drag();
     void moveTo(float moveX, float moveY);
     void setAngle(float a) { angle = a; }
     void setMass(float m) { mass = m; }

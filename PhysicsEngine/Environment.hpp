@@ -21,17 +21,17 @@ public:
     int getHeight() {return height;}
     int getWidth() {return width;}
     Circle * addCircle();
-        Circle * addCircle(float x, float y, float size, float mass, float speed, float angle);
-        Circle * getCircle(float x, float y);
-        std::vector<Circle* > getCircle() { return circles; }
-        void collisionResponse(Circle *circle);
-        void update();
+    Circle * addCircle(float x, float y, float size, float mass, float speed, float angle);
+    Circle * getCircle(float x, float y);
+    std::vector<Circle* > getCircle() { return circles; }
+    void collisionResponse(Circle *circle);
+    void update();
         
     protected:
         const int height;
         const int width;
         std::vector<Circle *> circles;
-        Velocity acceleration = {M_PI, 0.2};
+        Velocity acceleration = {M_PI, 1};
 };
 
 #endif /* Environment_hpp */
