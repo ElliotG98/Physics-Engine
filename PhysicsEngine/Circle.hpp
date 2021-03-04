@@ -20,14 +20,16 @@ Velocity operator+(Velocity const& v1, Velocity const& v2);
 
 class Circle {
 public:
-    Circle(float x, float y, float size, float mass, float speed, float angle);
+    Circle(float x, float y, float size, float mass, float speed, float angle, float airResistance);
     Circle *getCollideWith() { return collideWith; }
+    float getAirResistance() {return airResistance;}
     float getAngle() { return angle; }
     float getMass() { return mass; }
     float getSize() { return size; }
     float getSpeed() { return speed; }
     float getX() { return x; }
     float getY() { return y; }
+    void setAirResistance(float aR) {airResistance = aR;}
     void collide(Circle *otherC);
     void move();
     void moveTo(float moveX, float moveY);
@@ -39,6 +41,7 @@ public:
     void setY(float yCoord) { y = yCoord; }
     
 protected:
+    float airResistance;
     float angle;
     float mass;
     float size;

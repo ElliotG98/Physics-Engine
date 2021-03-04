@@ -41,7 +41,9 @@ Circle * Environment::addCircle() {
 }
 
 Circle * Environment::addCircle(float x, float y, float size, float mass, float speed, float angle) {
-    Circle *circle = new Circle(x, y, size, mass, speed, angle);
+    float airMass = 0.3;
+    float airResistance = pow((mass/(mass + airMass)), size);
+    Circle *circle = new Circle(x, y, size, mass, speed, angle, airResistance);
     circles.push_back(circle);
     return circle;
 }
@@ -86,7 +88,7 @@ void Environment::update() {
         //start circles moving and colliding
         circle->move();
         collisionResponse(circle);
-        // Allow circles to collide with eachother
+        // individually check if circles intersect by size : collide
         for (int x = i + 1; x < circles.size(); x++) {
             Circle *otherCircle = circles[x];
             circle->collide(otherCircle);

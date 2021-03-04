@@ -14,8 +14,8 @@ Velocity operator+(Velocity const& v1, Velocity const& v2) {
     return Velocity{static_cast<float>(0.5 * M_PI - atan2(y, x)), hypot(x, y)};
 }
 
-Circle::Circle(float x, float y, float size, float mass, float speed, float angle):
-x(x), y(y), size(size), mass(mass), speed(speed), angle(angle) {
+Circle::Circle(float x, float y, float size, float mass, float speed, float angle, float airResistance):
+x(x), y(y), size(size), mass(mass), speed(speed), angle(angle), airResistance(airResistance) {
 }
 
 void Circle::collide(Circle *otherC) {
