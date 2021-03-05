@@ -51,7 +51,7 @@ void Circle::accelerate(Velocity velocity) {
 }
 
 void Circle::drag() {
-    speed *= airResistance;
+    speed * airResistance;
 }
 
 void Circle::move() {

@@ -26,7 +26,7 @@ Circle * Environment::addCircle() {
     std::random_device random;
     std::default_random_engine el(random());
     std::uniform_int_distribution<int> sizeDist(10,30);
-    std::uniform_int_distribution<int> massDist(100, 10000);
+    std::uniform_int_distribution<int> massDist(100, 1000);
     float size = sizeDist(el);
     float speed = 0;
     float angle = 0;
@@ -42,7 +42,9 @@ Circle * Environment::addCircle(float x, float y, float size, float mass, float 
     //https://jfuchs.hotell.kau.se/kurs/amek/prst/06_simu.pdf drag forces
     //-1/2 x mass * speed squared * size * drag coeficient * angle
     float dragCoef = 0.1;
-    float airResistance = -1/2*(mass*(speed*speed)*size*dragCoef*angle);
+    float airMass = 1;
+    float vol = speed/mass;
+    float airResistance = 0.5 * (vol * vol) * airMass * dragCoef * size;
     Circle *circle = new Circle(x, y, size, mass, speed, angle, airResistance);
     circles.push_back(circle);
     return circle;
