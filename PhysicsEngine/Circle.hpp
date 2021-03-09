@@ -1,8 +1,8 @@
 //
 //  Circle.hpp
-//  PhysicsEngine
+//  PE
 //
-//  Created by Elliot Glaze on 14/02/2021.
+//  Created by Elliot Glaze on 06/03/2021.
 //  Copyright © 2021 Elliot Glaze. All rights reserved.
 //
 
@@ -12,45 +12,59 @@
 
 #include <math.h>
 
-struct Velocity {
-    float angle;
-    float speed;
+struct Position {
+    float x;
+    float y;
 };
-Velocity operator+(Velocity const& v1, Velocity const& v2);
+
+struct Velocity {
+    float xSpeed;
+    float ySpeed;
+};
+
+struct Acceleration {
+    float x;
+    float y;
+};
+
+struct Force {
+    float fx;
+    float fy;
+};
+
+struct Drag {
+    float dx;
+    float dy;
+};
 
 class Circle {
 public:
-    Circle(float x, float y, float size, float mass, float speed, float angle, float airResistance);
-    Circle *getCollideWith() { return collideWith; }
-    float getAirResistance() {return airResistance;}
-    float getAngle() { return angle; }
-    float getMass() { return mass; }
-    float getSize() { return size; }
-    float getSpeed() { return speed; }
-    float getX() { return x; }
-    float getY() { return y; }
-    void setAirResistance(float aR) {airResistance = aR;}
-    void collide(Circle *otherC);
+    Circle(Position position, Velocity velocity, Acceleration acceleration, Force force, float size, float mass);
+    Position getPosition() {return position;}
+    float getSize() {return size;}
+    
+    void setPosition(float x, float y) {position.x = x, position.y = y;}
+    void setAcceleration(float x, float y) {acceleration.x = x, acceleration.y = y;}
+    void setSize(float s) {size = s;}
+    
     void move();
-    void accelerate(Velocity velocity);
-    void drag();
-    void moveTo(float moveX, float moveY);
-    void setAngle(float a) { angle = a; }
-    void setMass(float m) { mass = m; }
-    void setSize(float s) { size = s; }
-    void setSpeed(float s) { speed = s; }
-    void setX(float xCoord) { x = xCoord; }
-    void setY(float yCoord) { y = yCoord; }
+    void moveTo(float x, float y);
+    void accelerate();
+    void applyForce();
+    void applyDrag();
+    void bounce();
+    void collisionDetection(Circle *otherCircle);
     
 protected:
-    float airResistance;
-    float angle;
-    float mass;
+    Position position;
+    Velocity velocity;
+    Acceleration acceleration;
+    Force force;
+    Drag drag;
     float size;
-    float speed;
-    float x;
-    float y;
-    Circle *collideWith = NULL;
+    float mass;
 };
 
 #endif /* Circle_hpp */
+
+

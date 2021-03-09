@@ -1,8 +1,8 @@
 //
 //  Environment.hpp
-//  PhysicsEngine
+//  PE
 //
-//  Created by Elliot Glaze on 12/02/2021.
+//  Created by Elliot Glaze on 06/03/2021.
 //  Copyright © 2021 Elliot Glaze. All rights reserved.
 //
 
@@ -10,9 +10,10 @@
 #define Environment_hpp
 #define _USE_MATH_DEFINES
 
+#include "Circle.hpp"
 #include <math.h>
 #include <random>
-#include "Circle.hpp"
+
 
 class Environment {
 public:
@@ -20,18 +21,17 @@ public:
     ~Environment();
     int getHeight() {return height;}
     int getWidth() {return width;}
+    std::vector<Circle *> getCircles() {return circles;}
     Circle * addCircle();
-    Circle * addCircle(float x, float y, float size, float mass, float speed, float angle);
     Circle * getCircle(float x, float y);
-    std::vector<Circle* > getCircle() { return circles; }
-    void collisionResponse(Circle *circle);
+    
     void update();
-        
-    protected:
-        const int height;
-        const int width;
-        std::vector<Circle *> circles;
-        Velocity acceleration = {M_PI, 1};
+    void bounce(Circle *circle);
+    
+protected:
+    const int height;
+    const int width;
+    std::vector<Circle *> circles;
 };
 
 #endif /* Environment_hpp */

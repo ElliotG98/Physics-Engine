@@ -1,68 +1,147 @@
 //
 //  Circle.cpp
-//  PhysicsEngine
+//  PE
 //
-//  Created by Elliot Glaze on 14/02/2021.
+//  Created by Elliot Glaze on 06/03/2021.
 //  Copyright © 2021 Elliot Glaze. All rights reserved.
 //
 
 #include "Circle.hpp"
 
-Velocity operator+(Velocity const& v1, Velocity const& v2) {
-    float x = sin(v1.angle) * v1.speed + sin(v2.angle) * v2.speed;
-    float y = cos(v1.angle) * v1.speed + cos(v2.angle) * v2.speed;
-    return Velocity{static_cast<float>(0.5 * M_PI - atan2(y, x)), hypot(x, y)};
+Circle::Circle(Position position, Velocity velocity, Acceleration acceleration, Force force, float size, float mass):
+position(position), velocity(velocity), acceleration(acceleration), force(force), size(size), mass(mass) {
 }
 
-Circle::Circle(float x, float y, float size, float mass, float speed, float angle, float airResistance):
-x(x), y(y), size(size), mass(mass), speed(speed), angle(angle), airResistance(airResistance) {
+void Circle::accelerate(){
+    velocity.xSpeed += acceleration.x;
+    velocity.ySpeed += acceleration.y;
 }
 
-void Circle::collide(Circle *otherC) {
-    float dx = x - otherC->x;
-    float dy = y - otherC->y;
-    float distance = hypot(dx, dy);
+void Circle::applyForce(){
+    //Accelleration = force / mass
+    acceleration.x += force.fx / mass;
+    acceleration.y += force.fy / mass;
+}
+
+void Circle::applyDrag(){
+    // Fd = - cd ||v2|| * UnitVector  Ive assumed area and density as constants that are counted in the coefficient
+    float c = 0.1;
+    float magx = sqrt(pow(c * velocity.xSpeed,2));
+    float magy = sqrt(pow(c * velocity.ySpeed,2));
     
-    if (distance < (size + otherC->size)) {
-        float tan = atan2(dy, dx);
-        float newAngle = 0.5 * M_PI + tan;
-        float totalMass = mass + otherC->mass;
-        
-        Velocity v1 = Velocity{angle, speed * (mass - otherC->mass) / totalMass} + Velocity{newAngle, 2 * otherC->speed * otherC->mass / totalMass};
-        Velocity v2 = Velocity{otherC->angle, otherC->speed * (otherC->mass - mass) / totalMass} + Velocity{static_cast<float>(newAngle+M_PI), 2 * speed * mass / totalMass};
-        
-        angle = v1.angle;
-        speed = v1.speed;
-        otherC->angle = v2.angle;
-        otherC->speed = v2.speed;
-        
-        float overlap = 0.5 * (size + otherC->size - distance + 1);
-        x += sin(newAngle) * overlap;
-        y -= cos(newAngle) * overlap;
-        otherC->x -= sin(newAngle) * overlap;
-        otherC->y += cos(newAngle) * overlap;
+    drag.dx = magx/(velocity.xSpeed * -1); //normalise and apply an opposite force
+    drag.dy = magy/(velocity.ySpeed * -1);
+    
+    acceleration.x += drag.dx;
+    acceleration.y += drag.dy;
+}
+
+//Collsion with boundarys
+void Circle::bounce() {
+    float height = 600;
+    float width = 800;
+    
+    if ((position.x > (width-size)) || (position.x < 0+size)) {
+        velocity.xSpeed *= -1;
+    }
+    if ((position.y > (height-size)) || (position.y < 0+size)) {
+        velocity.ySpeed *= -1;
+    }
+    if (position.x > width-size) {
+        position.x = width-size;
+    }
+    if (position.x < 0+size){
+        position.x = 0+size;
+    }
+    if (position.y > height-size) {
+        position.y = height-size;
+    }
+    if (position.y < 0+size){
+        position.y = 0+size;
     }
 }
 
-void Circle::accelerate(Velocity velocity) {
-    Velocity vel = Velocity{angle, speed} + velocity;
-    angle = vel.angle;
-    speed = vel.speed;
+void Circle::collisionDetection(Circle *otherCircle){
+    float otherSize = otherCircle->getSize();
+    float otherMass = otherCircle->mass;
+    float otherX = otherCircle->position.x;
+    float otherY = otherCircle->position.y;
+    //distance between them
+    float dx = position.x - otherX;
+    float dy = position.y - otherY;
+    float otherDx = otherX - position.x;
+    float otherDy = otherY - position.y;
+    //calculate the distance between circles
+    float distance = sqrt(dx * dx + dy * dy);
+    
+    //Collision has occured
+    if (size + otherSize >= distance){
+        //normalise distance vector
+        float nx = dx / distance;
+        float ny = dy / distance;
+        //Move the circles based on the angle between them using the ratio of the size to calculate contact point
+        float distFromCircle1 = distance * (size/(size + otherSize));
+        float contactX = position.x + nx * distFromCircle1;
+        float contactY = position.y + ny * distFromCircle1;
+        //stop intersecting
+        position.x = contactX - nx * size;
+        position.y = contactY - ny * size;
+        otherCircle->position.x = contactX + nx * otherSize;
+        otherCircle->position.y = contactY + ny * otherSize;
+        //Get velocities and directions
+        float v1 = sqrt(pow(dx,2) + pow(dy, 2));
+        float v2 = sqrt(pow(otherDx,2) + pow(otherDy, 2));
+        float dir1 = atan2(dy, dx);
+        float dir2 = atan2(otherDy, otherDx);
+        //direction from center to center
+        float contactDir = atan2(ny, nx);
+        //Elastic collision where v is velocity, d is direction, m is mass, p is angle of contact
+        //
+        //      v1* cos(d1-p) * (m1 - m2) + 2 * m2 * v2 * cos(d2- p)
+        // vx = ----------------------------------------------------- * cos(p) + v1 * sin(d1-p) * cos(p + PI/2)
+        //                    m1 + m2
+        
+        //      v1* cos(d1-p) * (m1 - m2) + 2 * m2 * v2 * cos(d2- p)
+        // vy = ----------------------------------------------------- * sin(p) + v1 * sin(d1-p) * sin(p + PI/2)
+        //                     m1 + m2
+        float mm = mass - otherMass;
+        float mmt = mass + otherMass;
+        float v1s = v1 * sin(dir1 - contactDir);
+        float cp = cos(contactDir);
+        float sp = sin(contactDir);
+        float cdp1 = v1 * cos(dir1 - contactDir);
+        float cdp2 = v2 * cos(dir2 - contactDir);
+        float cpp = cos(contactDir + M_PI / 2);
+        float spp = sin(contactDir + M_PI / 2);
+        
+        float t = (cdp1 * mm + 2 * otherMass * cdp2) / mmt;
+        dx = t * cp + v1s * cpp;
+        dy = t * sp + v1s * spp;
+        contactDir += M_PI;
+        
+        float v2s = v2 * sin(dir2 - contactDir);
+        cdp1 = v1 * cos(dir1 - contactDir);
+        cdp2 = v2 * cos(dir2 - contactDir);
+        t = (cdp2 * -mm + 2 * mass * cdp1) / mmt;
+        otherDx = t * -cp + v2s * -cpp;
+        otherDy = t * -sp + v2s * -spp;
+        
+        //Move the circle alongh the new delta
+        position.x += dx;
+        position.y += dy;
+        otherCircle->position.x += otherDx;
+        otherCircle->position.y += otherDy;
+    }
 }
 
-void Circle::drag() {
-    speed * airResistance;
+void Circle::moveTo(float x, float y){
+    float dx = x - position.x;
+    float dy = y - position.y;
+    velocity.xSpeed = dx * 0.1;
+    velocity.ySpeed = dy * 0.1;
 }
 
-void Circle::move() {
-    x += sin(angle) * speed;
-    y -= cos(angle) * (speed);
+void Circle::move(){
+    position.x += velocity.xSpeed;
+    position.y += velocity.ySpeed;
 }
-
-void Circle::moveTo(float moveX, float moveY) {
-    float dx = moveX - x;
-    float dy = moveY - y;
-    angle = atan2(dy, dx) + 0.5 * M_PI;
-    speed = hypot(dx, dy) * 0.1;
-}
-
