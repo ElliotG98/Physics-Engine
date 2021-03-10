@@ -64,13 +64,11 @@ void Circle::bounce() {
 void Circle::collisionDetection(Circle *otherCircle){
     float otherSize = otherCircle->getSize();
     float otherMass = otherCircle->mass;
-    float otherX = otherCircle->position.x;
-    float otherY = otherCircle->position.y;
     //distance between them
-    float dx = position.x - otherX;
-    float dy = position.y - otherY;
-    float otherDx = otherX - position.x;
-    float otherDy = otherY - position.y;
+    float dx = otherCircle->position.x - position.x;
+    float dy = otherCircle->position.y - position.y;
+    float otherDx = position.x - otherCircle->position.x;
+    float otherDy = position.y - otherCircle->position.y;
     //calculate the distance between circles
     float distance = sqrt(dx * dx + dy * dy);
     
@@ -88,7 +86,7 @@ void Circle::collisionDetection(Circle *otherCircle){
         position.y = contactY - ny * size;
         otherCircle->position.x = contactX + nx * otherSize;
         otherCircle->position.y = contactY + ny * otherSize;
-        //Get velocities and directions
+//          Get velocities and directions
         float v1 = sqrt(pow(dx,2) + pow(dy, 2));
         float v2 = sqrt(pow(otherDx,2) + pow(otherDy, 2));
         float dir1 = atan2(dy, dx);
@@ -100,37 +98,25 @@ void Circle::collisionDetection(Circle *otherCircle){
         //      v1* cos(d1-p) * (m1 - m2) + 2 * m2 * v2 * cos(d2- p)
         // vx = ----------------------------------------------------- * cos(p) + v1 * sin(d1-p) * cos(p + PI/2)
         //                    m1 + m2
-        
+
         //      v1* cos(d1-p) * (m1 - m2) + 2 * m2 * v2 * cos(d2- p)
         // vy = ----------------------------------------------------- * sin(p) + v1 * sin(d1-p) * sin(p + PI/2)
         //                     m1 + m2
+        //Formula to code
         float mm = mass - otherMass;
         float mmt = mass + otherMass;
-        float v1s = v1 * sin(dir1 - contactDir);
-        float cp = cos(contactDir);
-        float sp = sin(contactDir);
-        float cdp1 = v1 * cos(dir1 - contactDir);
-        float cdp2 = v2 * cos(dir2 - contactDir);
-        float cpp = cos(contactDir + M_PI / 2);
-        float spp = sin(contactDir + M_PI / 2);
+        float firstHalf = ((v1 * cos(dir1-contactDir) * mm + 2 * otherMass * v2 * cos(dir2 - contactDir)) / mmt);
+        float vx1 = firstHalf * cos(contactDir) + v1 * sin(dir1 - contactDir) * cos(contactDir + M_PI/2);
+        float vy1 = firstHalf * sin(contactDir) + v1 * sin(dir1 - contactDir) * sin(contactDir + M_PI/2);
+        mm = otherMass - mass;
+        firstHalf = (v2 * cos(dir2-contactDir) * mm + 2 * mass * v1 * cos(dir1 - contactDir)) / mmt;
+        float vx2 = firstHalf * cos(contactDir) + v2 * sin(dir2 - contactDir) * cos(contactDir + M_PI/2);
+        float vy2 = firstHalf * sin(contactDir) + v2 * sin(dir2 - contactDir) * sin(contactDir + M_PI/2);
         
-        float t = (cdp1 * mm + 2 * otherMass * cdp2) / mmt;
-        dx = t * cp + v1s * cpp;
-        dy = t * sp + v1s * spp;
-        contactDir += M_PI;
-        
-        float v2s = v2 * sin(dir2 - contactDir);
-        cdp1 = v1 * cos(dir1 - contactDir);
-        cdp2 = v2 * cos(dir2 - contactDir);
-        t = (cdp2 * -mm + 2 * mass * cdp1) / mmt;
-        otherDx = t * -cp + v2s * -cpp;
-        otherDy = t * -sp + v2s * -spp;
-        
-        //Move the circle alongh the new delta
-        position.x += dx;
-        position.y += dy;
-        otherCircle->position.x += otherDx;
-        otherCircle->position.y += otherDy;
+        velocity.xSpeed += vx1;
+        velocity.ySpeed += vy1;
+        otherCircle->velocity.xSpeed += vx2;
+        otherCircle->velocity.ySpeed += vy2;
     }
 }
 

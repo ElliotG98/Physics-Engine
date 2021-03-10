@@ -22,7 +22,7 @@ Circle * Environment::addCircle() {
     std::uniform_int_distribution<float> yRand(size, height - size);
     std::uniform_int_distribution<float> xVelocityRand(1, 5);
     std::uniform_int_distribution<float> yVelocityRand(1, 5);
-    std::uniform_int_distribution<float> massRand(1, 20);
+    std::uniform_int_distribution<float> massRand(100, 200);
     float mass = massRand(rd);
     Position position = {xRand(rd), yRand(rd)};
     Velocity velocity = {xVelocityRand(rd), yVelocityRand(rd)};
