@@ -22,16 +22,14 @@ Circle * Environment::addCircle() {
     std::uniform_int_distribution<float> yRand(size, height - size);
     std::uniform_int_distribution<float> xVelocityRand(1, 5);
     std::uniform_int_distribution<float> yVelocityRand(1, 5);
-    std::uniform_int_distribution<float> massRand(100, 200);
+    std::uniform_int_distribution<float> massRand(10, 20);
     float mass = massRand(rd);
     Position position = {xRand(rd), yRand(rd)};
     Velocity velocity = {xVelocityRand(rd), yVelocityRand(rd)};
     Acceleration acceleration = {0, 0};
-    //Force = mass * acceleration
     //Earths Gravity = 9.807msSquared
     float gravityConstant = pow(9.807, 2);
     Force force = {0, gravityConstant};
-    
     Circle *circle = new Circle(position, velocity, acceleration, force, size, mass);
     circles.push_back(circle);
     return circle;
@@ -46,19 +44,49 @@ Circle * Environment::getCircle(float x, float y){
     return nullptr;
 }
 
+//Collsion with boundarys
+void Environment::bounce(Circle *c) {
+    float x = c->getPosition().x;
+    float y = c->getPosition().y;
+    float xSpeed = c->getVelocity().xSpeed;
+    float ySpeed = c->getVelocity().ySpeed;
+    float size = c->getSize();
+    
+    
+    if ((x > (width-size)) || (x < size)) {
+        c->setVelocityX(-xSpeed * 0.75);
+    }
+    if ((y > (height-size)) || (y < size)) {
+        c->setVelocityY(-ySpeed * 0.75);
+    }
+    if (x > width-size) {
+        c->setX(width-size);
+    }
+    if (x < size){
+        c->setX(size);
+    }
+    if (y > height-size) {
+        c->setY(height-size);
+    }
+    if (y < size){
+        c->setY(size);
+    }
+}
+
 
 void Environment::update() {
     for (int i = 0; i < circles.size(); i++) {
         Circle *c = circles[i];
-        c->move();
-        c->bounce();
         c->applyForce();
-        c->applyDrag();
         c->accelerate();
-        c->setAcceleration(0, 0);
+        c->move();
+        c->applyDrag();
+        bounce(c);
         for (int j = i + 1; j < circles.size(); j++) {
             Circle *otherCircle = circles[j];
             c->collisionDetection(otherCircle);
         }
     }
 }
+
+

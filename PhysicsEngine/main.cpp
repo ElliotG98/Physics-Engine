@@ -24,7 +24,7 @@
 
 int main(int, char const**)
 {
-    Environment *env = new Environment(800, 600);
+    Environment *env = new Environment(1024, 700);
     Circle *selectedCircle = nullptr;
     
     sf::RenderWindow window(sf::VideoMode(env->getWidth(), env->getHeight()), "window");

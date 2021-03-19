@@ -42,17 +42,21 @@ public:
     Circle(Position position, Velocity velocity, Acceleration acceleration, Force force, float size, float mass);
     Position getPosition() {return position;}
     float getSize() {return size;}
+    Velocity getVelocity() {return velocity;}
     
     void setPosition(float x, float y) {position.x = x, position.y = y;}
     void setAcceleration(float x, float y) {acceleration.x = x, acceleration.y = y;}
     void setSize(float s) {size = s;}
+    void setVelocityX(float x) {velocity.xSpeed = x;}
+    void setVelocityY(float y) {velocity.ySpeed = y;}
+    void setX(float x) {position.x = x;}
+    void setY(float y) {position.y = y;}
     
     void move();
     void moveTo(float x, float y);
     void accelerate();
     void applyForce();
     void applyDrag();
-    void bounce();
     void collisionDetection(Circle *otherCircle);
     
 protected:
