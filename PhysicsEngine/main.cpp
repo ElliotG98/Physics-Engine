@@ -30,7 +30,7 @@ int main(int, char const**)
     sf::RenderWindow window(sf::VideoMode(env->getWidth(), env->getHeight()), "window");
     window.setFramerateLimit(60);
     
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 1; i++) {
         env->addCircle();
     }
     

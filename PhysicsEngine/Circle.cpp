@@ -36,14 +36,9 @@ void Circle::applyDrag(){
 }
 
 void Circle::collisionDetection(Circle *otherCircle){
-    //distance between them
-    float dx = otherCircle->position.x - position.x;
-    float dy = otherCircle->position.y - position.y;
-    float otherDx = position.x - otherCircle->position.x;
-    float otherDy = position.y - otherCircle->position.y;
     //distance
     float distance = sqrt((position.x - otherCircle->position.x)*(position.x - otherCircle->position.x) + (position.y - otherCircle->position.y)*(position.y - otherCircle->position.y));
-
+    
     //Collision has occured
     if (size + otherCircle->size >= distance){
         //displacement
