@@ -7,7 +7,4 @@
 
 ![Simple Collision Detection](https://github.com/ElliotG98/Physics-Engine/blob/master/PhysicsEngineCollisionDetection.png?raw=true)
 
-
-
-
-
+![Resting Contact](https://github.com/ElliotG98/Physics-Engine/blob/master/PhysicsEngineRestingContact.png?raw=true)
